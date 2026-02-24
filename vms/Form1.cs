@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Diagnostics.Eventing.Reader;
 
 namespace vms
 {
@@ -42,17 +43,24 @@ namespace vms
 
         private async void Form1_Load(object sender, EventArgs e)
         {
+
+            this.WindowState = FormWindowState.Maximized;
+
             AjustarVideos();
 
+            // X = 10 (esquerda)
+            // Y = Altura da janela - Altura do botão - 10 de margem
+            btnHd.Location = new Point(10, this.ClientSize.Height - btnHd.Height - 10);
+
             // --- CONFIGURAÇÃO DA CÂMERA 1 (IP .38) ---
-            string urlCam1 = "rtsp://admin:root@192.168.100.38:554/V_ENC_000";
+            string urlCam1 = "rtsp://admin:root@192.168.100.38:554/V_ENC_001";
             var media1 = new Media(_libVLC, new Uri(urlCam1));
             media1.AddOption(":rtsp-tcp");             // Força TCP
             media1.AddOption(":network-caching=1000"); // Buffer de 1s
 
             // --- CONFIGURAÇÃO DA CÂMERA 2 (IP .105) ---
             // Mantido V_ENC_000 (HD). Se o PC travar, mude para V_ENC_001
-            string urlCam2 = "rtsp://admin:root@192.168.100.105:554/V_ENC_000";
+            string urlCam2 = "rtsp://admin:root@192.168.100.105:554/V_ENC_001";
             var media2 = new Media(_libVLC, new Uri(urlCam2));
             media2.AddOption(":rtsp-tcp");
             media2.AddOption(":network-caching=1000");
@@ -63,6 +71,12 @@ namespace vms
 
             // Arranca a magia do acesso externo!
             await IniciarTunelNuvem();
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {// X = 10 (esquerda)
+         // Y = Altura da janela - Altura do botão - 10 de margem
+            btnHd.Location = new Point(10, this.ClientSize.Height - btnHd.Height - 10);
         }
         private async Task IniciarTunelNuvem()
         {
@@ -143,6 +157,51 @@ namespace vms
             }
 
             base.OnFormClosing(e);
+        }
+
+        // 1. Declare fora do botão, no topo da classe Form1
+        bool hd_ativo = false;
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Inverte o estado (se era false vira true, se era true vira false)
+            hd_ativo = !hd_ativo;
+
+            string url1, url2;
+
+            if (hd_ativo)
+            {
+                btnHd.Text = "HD ATIVO";
+                // Stream em HD (V_ENC_000)
+                url1 = "rtsp://admin:root@192.168.100.38:554/V_ENC_000";
+                url2 = "rtsp://admin:root@192.168.100.105:554/V_ENC_000";
+            }
+            else
+            {
+                btnHd.Text = "SD ATIVO";
+                // Stream em SD (V_ENC_001)
+                url1 = "rtsp://admin:root@192.168.100.38:554/V_ENC_001";
+                url2 = "rtsp://admin:root@192.168.100.105:554/V_ENC_001";
+            }
+
+            // AGORA A MÁGICA: Parar e recarregar com a nova URL
+            AtualizarPlayer(url1, url2);
+        }
+
+        private void AtualizarPlayer(string url1, string url2)
+        {
+            _mediaPlayer1.Stop();
+            _mediaPlayer2.Stop();
+
+            // Criamos as novas mídias com as opções de rede
+            var m1 = new Media(_libVLC, new Uri(url1));
+            m1.AddOption(":rtsp-tcp"); // Garante estabilidade
+
+            var m2 = new Media(_libVLC, new Uri(url2));
+            m2.AddOption(":rtsp-tcp");
+
+            _mediaPlayer1.Play(m1);
+            _mediaPlayer2.Play(m2);
         }
     }
 }

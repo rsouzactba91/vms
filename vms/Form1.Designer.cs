@@ -20,6 +20,7 @@
             videoView1 = new LibVLCSharp.WinForms.VideoView();
             videoView2 = new LibVLCSharp.WinForms.VideoView();
             panel1 = new Panel();
+            btnHd = new Button();
             ((System.ComponentModel.ISupportInitialize)videoView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)videoView2).BeginInit();
             panel1.SuspendLayout();
@@ -54,11 +55,22 @@
             panel1.Size = new Size(735, 314);
             panel1.TabIndex = 2;
             // 
+            // btnHd
+            // 
+            btnHd.Location = new Point(56, 380);
+            btnHd.Name = "btnHd";
+            btnHd.Size = new Size(75, 23);
+            btnHd.TabIndex = 3;
+            btnHd.Text = "HD";
+            btnHd.UseVisualStyleBackColor = true;
+            btnHd.Click += button1_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnHd);
             Controls.Add(panel1);
             Name = "Form1";
             Text = "Gerenciador de Câmeras IP";
@@ -74,5 +86,6 @@
         private LibVLCSharp.WinForms.VideoView videoView1;
         private LibVLCSharp.WinForms.VideoView videoView2;
         private System.Windows.Forms.Panel panel1;
+        private Button btnHd;
     }
 }
