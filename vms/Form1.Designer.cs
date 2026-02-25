@@ -20,10 +20,18 @@
             videoView1 = new LibVLCSharp.WinForms.VideoView();
             videoView2 = new LibVLCSharp.WinForms.VideoView();
             panel1 = new Panel();
+            lblEstado_2 = new Label();
+            lblestado_1 = new Label();
             btnHd = new Button();
+            trackBar1 = new TrackBar();
+            btnGravar = new Button();
+            btnLive = new Button();
+            btnPlay = new Button();
+            btnPause = new Button();
             ((System.ComponentModel.ISupportInitialize)videoView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)videoView2).BeginInit();
             panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             SuspendLayout();
             // 
             // videoView1
@@ -48,6 +56,8 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(lblEstado_2);
+            panel1.Controls.Add(lblestado_1);
             panel1.Controls.Add(videoView1);
             panel1.Controls.Add(videoView2);
             panel1.Location = new Point(32, 36);
@@ -55,9 +65,29 @@
             panel1.Size = new Size(735, 314);
             panel1.TabIndex = 2;
             // 
+            // lblEstado_2
+            // 
+            lblEstado_2.AutoSize = true;
+            lblEstado_2.Location = new Point(669, 3);
+            lblEstado_2.Name = "lblEstado_2";
+            lblEstado_2.Size = new Size(47, 15);
+            lblEstado_2.TabIndex = 3;
+            lblEstado_2.Text = "Ao vivo";
+         
+            // 
+            // lblestado_1
+            // 
+            lblestado_1.AutoSize = true;
+            lblestado_1.Location = new Point(20, 3);
+            lblestado_1.Name = "lblestado_1";
+            lblestado_1.Size = new Size(47, 15);
+            lblestado_1.TabIndex = 2;
+            lblestado_1.Text = "Ao vivo";
+     
+            // 
             // btnHd
             // 
-            btnHd.Location = new Point(56, 380);
+            btnHd.Location = new Point(52, 415);
             btnHd.Name = "btnHd";
             btnHd.Size = new Size(75, 23);
             btnHd.TabIndex = 3;
@@ -65,20 +95,81 @@
             btnHd.UseVisualStyleBackColor = true;
             btnHd.Click += button1_Click;
             // 
+            // trackBar1
+            // 
+            trackBar1.BackColor = Color.IndianRed;
+            trackBar1.Location = new Point(32, 364);
+            trackBar1.Maximum = 100;
+            trackBar1.Name = "trackBar1";
+            trackBar1.Size = new Size(735, 45);
+            trackBar1.TabIndex = 4;
+            trackBar1.TickFrequency = 10;
+            // 
+            // btnGravar
+            // 
+            btnGravar.Location = new Point(277, 415);
+            btnGravar.Name = "btnGravar";
+            btnGravar.Size = new Size(85, 23);
+            btnGravar.TabIndex = 5;
+            btnGravar.Text = "Ver gravação";
+            btnGravar.UseVisualStyleBackColor = true;
+            btnGravar.Click += btnGravar_Click;
+            // 
+            // btnLive
+            // 
+            btnLive.Location = new Point(368, 415);
+            btnLive.Name = "btnLive";
+            btnLive.Size = new Size(75, 23);
+            btnLive.TabIndex = 6;
+            btnLive.Text = "Ao vivo";
+            btnLive.UseVisualStyleBackColor = true;
+            btnLive.Click += btnLive_Click_1;
+            // 
+            // btnPlay
+            // 
+            btnPlay.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnPlay.Location = new Point(205, 415);
+            btnPlay.Name = "btnPlay";
+            btnPlay.Size = new Size(29, 23);
+            btnPlay.TabIndex = 7;
+            btnPlay.Text = ">";
+            btnPlay.UseVisualStyleBackColor = true;
+            btnPlay.Click += btnPlay_Click;
+            // 
+            // btnPause
+            // 
+            btnPause.Font = new Font("Segoe UI Black", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            btnPause.Location = new Point(240, 415);
+            btnPause.Name = "btnPause";
+            btnPause.Size = new Size(31, 23);
+            btnPause.TabIndex = 8;
+            btnPause.Text = "||";
+            btnPause.UseVisualStyleBackColor = true;
+            btnPause.Click += btnPause_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnPause);
+            Controls.Add(btnPlay);
+            Controls.Add(btnLive);
+            Controls.Add(btnGravar);
+            Controls.Add(trackBar1);
             Controls.Add(btnHd);
             Controls.Add(panel1);
             Name = "Form1";
-            Text = "Gerenciador de Câmeras IP";
+            Text = "VMS-R";
+            WindowState = FormWindowState.Maximized;
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)videoView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)videoView2).EndInit();
             panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -87,5 +178,12 @@
         private LibVLCSharp.WinForms.VideoView videoView2;
         private System.Windows.Forms.Panel panel1;
         private Button btnHd;
+        private TrackBar trackBar1;
+        private Button btnGravar;
+        private Button btnLive;
+        private Label lblestado_1;
+        private Label lblEstado_2;
+        private Button btnPlay;
+        private Button btnPause;
     }
 }

@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using LibVLCSharp.Shared;
@@ -15,17 +15,14 @@ namespace vms
     {
         private LibVLC _libVLC;
 
-        // Players principais da tela (O que o operador vï¿½)
+        // Players principais da tela (O que o operador vê)
         private MediaPlayer _mediaPlayer1;
         private MediaPlayer _mediaPlayer2;
 
-        // Motores de Gravaï¿½ï¿½o (Trabalham no background, sem parar)
+        // Motores de Gravação (Trabalham no background, sem parar)
         private MediaPlayer _recorderPlayer1;
         private MediaPlayer _recorderPlayer2;
 
-        private System.Windows.Forms.Timer _timerTrackBar;
-        private string _currentRecordPath1;
-        private string _currentRecordPath2;
         bool hd_ativo = false;
 
         public Form1()
@@ -47,29 +44,24 @@ namespace vms
 
             panel1.Dock = DockStyle.Fill;
             panel1.Resize += Panel1_Resize;
-        
-            _timerTrackBar = new System.Windows.Forms.Timer();
-            _timerTrackBar.Interval = 1000;
-            _timerTrackBar.Tick += TimerTrackBar_Tick;
-            _timerTrackBar.Enabled = true;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Maximized;
-            this.Text = "VMS-R | Monitoramento Contï¿½nuo";
+            this.Text = "VMS-R | Monitoramento Contínuo";
             this.MaximizeBox = false;
 
             ConfigurarInterface();
 
-            // --- AQUI ESTï¿½ O QUE VOCï¿½ PEDIU ---
-            // 1. O motor de gravaï¿½ï¿½o liga IMEDIATAMENTE
+            // --- AQUI ESTÁ O QUE VOCÊ PEDIU ---
+            // 1. O motor de gravação liga IMEDIATAMENTE
             IniciarGravacaoBackground();
 
-            // 2. O vï¿½deo aparece na tela (Ao Vivo) por padrï¿½o
+            // 2. O vídeo aparece na tela (Ao Vivo) por padrão
             btnLive_Click_1(null, null);
 
-            IniciarTunelNuvem();
+            await IniciarTunelNuvem();
         }
 
         private void ConfigurarInterface()
@@ -89,22 +81,21 @@ namespace vms
 
         private void IniciarGravacaoBackground()
         {
-            // Usamos a data e hora para no sobrescrever gravaes antigas
-            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            _currentRecordPath1 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"camera1_{timestamp}.ts");
-            _currentRecordPath2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"camera2_{timestamp}.ts");
+            // Os arquivos são criados AGORA na pasta Debug do projeto
+            string path1 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "camera1.mp4");
+            string path2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "camera2.mp4");
 
             string url1 = "rtsp://admin:root@192.168.100.38:554/V_ENC_001";
             string url2 = "rtsp://admin:root@192.168.100.101:554/V_ENC_001";
 
             // Motor 1
             var m1 = new Media(_libVLC, new Uri(url1));
-            m1.AddOption($":sout=#std{{access=file,mux=ts,dst='{_currentRecordPath1}'}}");
+            m1.AddOption($":sout=#std{{access=file,mux=mp4,dst='{path1}'}}");
             _recorderPlayer1.Play(m1);
 
             // Motor 2
             var m2 = new Media(_libVLC, new Uri(url2));
-            m2.AddOption($":sout=#std{{access=file,mux=ts,dst='{_currentRecordPath2}'}}");
+            m2.AddOption($":sout=#std{{access=file,mux=mp4,dst='{path2}'}}");
             _recorderPlayer2.Play(m2);
         }
 
@@ -118,7 +109,7 @@ namespace vms
             string qualidade = hd_ativo ? "V_ENC_000" : "V_ENC_001";
 
             lblestado_1.Text = "AO VIVO (GRAVANDO...)";
-            lblestado_1.ForeColor = Color.Red; // Vermelho porque o motor est gravando no fundo
+            lblestado_1.ForeColor = Color.Red; // Vermelho porque o motor está gravando no fundo
             lblEstado_2.Text = lblestado_1.Text;
             lblEstado_2.ForeColor = Color.Red;
 
@@ -126,56 +117,35 @@ namespace vms
                            $"rtsp://admin:root@192.168.100.101:554/{qualidade}");
         }
 
-        private void btnGravar_Click(object sender, EventArgs e) // MODO VER GRAVAO
+        private void btnGravar_Click(object sender, EventArgs e) // MODO VER GRAVAÇÃO
         {
             btnGravar.ForeColor = Color.DodgerBlue;
             btnGravar.Font = new Font(btnGravar.Font, FontStyle.Bold);
             btnLive.ForeColor = Color.Gray;
 
-            if (!string.IsNullOrEmpty(_currentRecordPath1) && File.Exists(_currentRecordPath1))
+            string path1 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "camera1.mp4");
+            string path2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "camera2.mp4");
+
+            if (File.Exists(path1))
             {
                 trackBar1.Enabled = true;
-                lblestado_1.Text = "REPRODUÃ‡Ã‚O";
+                lblestado_1.Text = "REPRODUZINDO PASSADO";
                 lblestado_1.ForeColor = Color.DodgerBlue;
                 lblEstado_2.Text = lblestado_1.Text;
                 lblEstado_2.ForeColor = Color.DodgerBlue;
 
                 // O player da tela troca para o arquivo, mas o recorderPlayer continua salvando!
-                using (var m1 = new Media(_libVLC, _currentRecordPath1, FromType.FromPath))
-                {
-                    _mediaPlayer1.Play(m1);
-                }
-                if (!string.IsNullOrEmpty(_currentRecordPath2) && File.Exists(_currentRecordPath2))
-                {
-                    using (var m2 = new Media(_libVLC, _currentRecordPath2, FromType.FromPath))
-                    {
-                        _mediaPlayer2.Play(m2);
-                    }
-                }
+                _mediaPlayer1.Play(new Media(_libVLC, path1, FromType.FromPath));
+                if (File.Exists(path2)) _mediaPlayer2.Play(new Media(_libVLC, path2, FromType.FromPath));
             }
             else
             {
-                MessageBox.Show("Motor de gravao ainda iniciando...");
+                MessageBox.Show("Motor de gravação ainda iniciando...");
                 btnLive_Click_1(null, null);
             }
         }
 
-        // --- MTODOS DE APOIO (Sincronia e Ajustes) ---
-
-        private void TimerTrackBar_Tick(object sender, EventArgs e)
-        {
-            if (trackBar1.Enabled && btnGravar.ForeColor == Color.DodgerBlue)
-            {
-                if (_mediaPlayer1 != null && _mediaPlayer1.IsPlaying)
-                {
-                    int posicaoAtual = (int)(_mediaPlayer1.Position * 100);
-                    if (posicaoAtual >= 0 && posicaoAtual <= 100 && posicaoAtual != trackBar1.Value)
-                    {
-                        trackBar1.Value = posicaoAtual;
-                    }
-                }
-            }
-        }
+        // --- MÉTODOS DE APOIO (Sincronia e Ajustes) ---
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
@@ -200,16 +170,9 @@ namespace vms
         private void AtualizarPlayer(string url1, string url2)
         {
             _mediaPlayer1.Stop(); _mediaPlayer2.Stop();
-            using (var m1 = new Media(_libVLC, new Uri(url1)))
-            {
-                m1.AddOption(":rtsp-tcp");
-                _mediaPlayer1.Play(m1);
-            }
-            using (var m2 = new Media(_libVLC, new Uri(url2)))
-            {
-                m2.AddOption(":rtsp-tcp");
-                _mediaPlayer2.Play(m2);
-            }
+            var m1 = new Media(_libVLC, new Uri(url1)); m1.AddOption(":rtsp-tcp");
+            var m2 = new Media(_libVLC, new Uri(url2)); m2.AddOption(":rtsp-tcp");
+            _mediaPlayer1.Play(m1); _mediaPlayer2.Play(m2);
         }
 
         private void AjustarVideos()
@@ -236,7 +199,7 @@ namespace vms
             base.OnFormClosing(e);
         }
 
-        private void IniciarTunelNuvem()
+        private async Task IniciarTunelNuvem()
         {
             try
             {
@@ -251,7 +214,7 @@ namespace vms
             catch { }
         }
 
-        private void button1_Click(object sender, EventArgs e) // Botï¿½o HD/SD
+        private void button1_Click(object sender, EventArgs e) // Botão HD/SD
         {
             hd_ativo = !hd_ativo;
             btnHd.Text = hd_ativo ? "HD ATIVO" : "SD ATIVO";
