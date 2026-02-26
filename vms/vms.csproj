@@ -13,4 +13,11 @@
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.23" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Copiar ngrok.exe para o diretório de saída -->
+    <None Update="ngrok.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

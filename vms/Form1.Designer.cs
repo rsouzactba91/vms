@@ -24,10 +24,11 @@
             lblestado_1 = new Label();
             btnHd = new Button();
             trackBar1 = new TrackBar();
-            btnGravar = new Button();
             btnLive = new Button();
             btnPlay = new Button();
             btnPause = new Button();
+            btnGravacoes = new Button();
+            btnNgrok = new Button();
             ((System.ComponentModel.ISupportInitialize)videoView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)videoView2).BeginInit();
             panel1.SuspendLayout();
@@ -73,7 +74,6 @@
             lblEstado_2.Size = new Size(47, 15);
             lblEstado_2.TabIndex = 3;
             lblEstado_2.Text = "Ao vivo";
-         
             // 
             // lblestado_1
             // 
@@ -83,7 +83,6 @@
             lblestado_1.Size = new Size(47, 15);
             lblestado_1.TabIndex = 2;
             lblestado_1.Text = "Ao vivo";
-     
             // 
             // btnHd
             // 
@@ -93,7 +92,7 @@
             btnHd.TabIndex = 3;
             btnHd.Text = "HD";
             btnHd.UseVisualStyleBackColor = true;
-            btnHd.Click += button1_Click;
+            btnHd.Click += btnHd_Click;
             // 
             // trackBar1
             // 
@@ -104,16 +103,6 @@
             trackBar1.Size = new Size(735, 45);
             trackBar1.TabIndex = 4;
             trackBar1.TickFrequency = 10;
-            // 
-            // btnGravar
-            // 
-            btnGravar.Location = new Point(277, 415);
-            btnGravar.Name = "btnGravar";
-            btnGravar.Size = new Size(85, 23);
-            btnGravar.TabIndex = 5;
-            btnGravar.Text = "Ver gravação";
-            btnGravar.UseVisualStyleBackColor = true;
-            btnGravar.Click += btnGravar_Click;
             // 
             // btnLive
             // 
@@ -147,15 +136,36 @@
             btnPause.UseVisualStyleBackColor = true;
             btnPause.Click += btnPause_Click;
             // 
+            // btnGravacoes
+            // 
+            btnGravacoes.Location = new Point(287, 415);
+            btnGravacoes.Name = "btnGravacoes";
+            btnGravacoes.Size = new Size(75, 23);
+            btnGravacoes.TabIndex = 9;
+            btnGravacoes.Text = "Gravações";
+            btnGravacoes.UseVisualStyleBackColor = true;
+            btnGravacoes.Click += AbrirGravacoes_Click;
+            // 
+            // btnNgrok
+            // 
+            btnNgrok.Location = new Point(449, 415);
+            btnNgrok.Name = "btnNgrok";
+            btnNgrok.Size = new Size(75, 23);
+            btnNgrok.TabIndex = 10;
+            btnNgrok.Text = "Link Ngrok";
+            btnNgrok.UseVisualStyleBackColor = true;
+            btnNgrok.Click += btnNgrok_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnNgrok);
+            Controls.Add(btnGravacoes);
             Controls.Add(btnPause);
             Controls.Add(btnPlay);
             Controls.Add(btnLive);
-            Controls.Add(btnGravar);
             Controls.Add(trackBar1);
             Controls.Add(btnHd);
             Controls.Add(panel1);
@@ -179,11 +189,12 @@
         private System.Windows.Forms.Panel panel1;
         private Button btnHd;
         private TrackBar trackBar1;
-        private Button btnGravar;
         private Button btnLive;
         private Label lblestado_1;
         private Label lblEstado_2;
         private Button btnPlay;
         private Button btnPause;
+        private Button btnGravacoes;
+        private Button btnNgrok;
     }
 }
